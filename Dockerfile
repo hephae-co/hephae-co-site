@@ -9,6 +9,9 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+# List the contents of the dist directory for debugging
+RUN ls -l /app/dist
+
 # Stage 2: Serve the application
 FROM nginx:1.21.3-alpine
 
