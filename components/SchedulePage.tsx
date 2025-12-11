@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NeuralBackground } from './NeuralBackground';
+import { Footer } from './Footer';
 import { ArrowLeft, Send, CheckCircle, Mail, MessageSquare, AlertCircle, Briefcase } from 'lucide-react';
 import { SERVICE_TIERS } from '../constants';
 
@@ -29,8 +30,8 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onBack, initialServi
 
     const formData = new FormData();
     // Web3Forms Access Key
-    formData.append("access_key", "a862f72e-99fe-4e60-9fdf-b61a5eb4c5b9"); 
-    
+    formData.append("access_key", "a862f72e-99fe-4e60-9fdf-b61a5eb4c5b9");
+
     formData.append("email", email);
     formData.append("service_interest", service);
     formData.append("message", message || "No message provided");
@@ -70,7 +71,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onBack, initialServi
 
       {/* Navigation / Header */}
       <div className="relative z-20 px-6 py-6 flex justify-between items-center max-w-7xl mx-auto w-full">
-        <button 
+        <button
           onClick={onBack}
           className="group flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
         >
@@ -81,18 +82,18 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onBack, initialServi
         </button>
 
         <div className="flex items-center gap-2">
-            <img 
-              src="https://insights.ai.hephae.co/hephae_logo_blue.png" 
-              alt="Hephae.co" 
-              className="h-8 w-auto object-contain" 
-            />
+          <img
+            src="https://insights.ai.hephae.co/hephae_logo_blue.png"
+            alt="Hephae.co"
+            className="h-8 w-auto object-contain"
+          />
         </div>
       </div>
 
       {/* Main Content */}
       <div className="relative z-20 flex-grow flex items-center justify-center p-4">
         <div className="w-full max-w-lg">
-          
+
           <div className={`bg-white/70 backdrop-blur-xl border border-white/50 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-3xl p-8 md:p-12 transition-all duration-500 ${formState === 'success' ? 'scale-95 opacity-0 absolute pointer-events-none' : 'scale-100 opacity-100'}`}>
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-3">Let's Connect</h2>
@@ -103,10 +104,10 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onBack, initialServi
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
-              
+
               <div className="space-y-2">
                 <label htmlFor="service" className="text-sm font-semibold text-gray-700 ml-1 flex items-center gap-2">
-                  <Briefcase size={16} className="text-gray-500"/> Service Interest
+                  <Briefcase size={16} className="text-gray-500" /> Service Interest
                 </label>
                 <div className="relative">
                   <select
@@ -124,14 +125,14 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onBack, initialServi
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500">
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-semibold text-gray-700 ml-1 flex items-center gap-2">
-                  <Mail size={16} className="text-blue-500"/> Email Address
+                  <Mail size={16} className="text-blue-500" /> Email Address
                 </label>
                 <input
                   type="email"
@@ -147,7 +148,7 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onBack, initialServi
 
               <div className="space-y-2">
                 <label htmlFor="message" className="text-sm font-semibold text-gray-700 ml-1 flex items-center gap-2">
-                   <MessageSquare size={16} className="text-purple-500"/> Message (Optional)
+                  <MessageSquare size={16} className="text-purple-500" /> Message (Optional)
                 </label>
                 <textarea
                   id="message"
@@ -185,25 +186,26 @@ export const SchedulePage: React.FC<SchedulePageProps> = ({ onBack, initialServi
 
           {/* Success State */}
           <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg text-center transition-all duration-500 ${formState === 'success' ? 'scale-100 opacity-100' : 'scale-90 opacity-0 pointer-events-none'}`}>
-             <div className="bg-white/80 backdrop-blur-xl border border-green-100 shadow-[0_20px_60px_rgba(0,255,100,0.15)] rounded-3xl p-12">
-                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle size={40} />
-                </div>
-                <h3 className="text-3xl font-display font-bold text-gray-900 mb-4">Request Received!</h3>
-                <p className="text-gray-600 mb-8">
-                  Thanks for reaching out about our <strong>{service}</strong>. We've received your details and will be in touch shortly.
-                </p>
-                <button 
-                  onClick={onBack}
-                  className="px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-full font-medium transition-colors"
-                >
-                  Back to Website
-                </button>
-             </div>
+            <div className="bg-white/80 backdrop-blur-xl border border-green-100 shadow-[0_20px_60px_rgba(0,255,100,0.15)] rounded-3xl p-12">
+              <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle size={40} />
+              </div>
+              <h3 className="text-3xl font-display font-bold text-gray-900 mb-4">Request Received!</h3>
+              <p className="text-gray-600 mb-8">
+                Thanks for reaching out about our <strong>{service}</strong>. We've received your details and will be in touch shortly.
+              </p>
+              <button
+                onClick={onBack}
+                className="px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-full font-medium transition-colors"
+              >
+                Back to Website
+              </button>
+            </div>
           </div>
 
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
