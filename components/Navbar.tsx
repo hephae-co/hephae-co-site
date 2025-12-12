@@ -44,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScheduleClick, onAboutClick, o
             alt="Hephae.co"
             className="h-10 w-auto object-contain"
           />
-          <span className="bg-red-500 text-white text-xs px-1 rounded">v2</span>
+          <span className="bg-blue-500 text-white text-xs px-1 rounded">v3</span>
         </div>
 
         {/* Desktop Nav */}

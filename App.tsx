@@ -13,6 +13,7 @@ import { SERVICE_TIERS } from './constants';
 import { ArrowRight, Utensils } from 'lucide-react';
 
 const App: React.FC = () => {
+  console.log('App version: v3');
   const [titleLine1, setTitleLine1] = useState('');
   const [titleLine2, setTitleLine2] = useState('');
   const [isLine1Complete, setIsLine1Complete] = useState(false);
