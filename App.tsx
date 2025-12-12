@@ -13,16 +13,33 @@ import { SERVICE_TIERS } from './constants';
 import { ArrowRight, Utensils } from 'lucide-react';
 
 const App: React.FC = () => {
-  console.log('App version: v3');
+  // Helper to get view from path
+  const getViewFromPath = () => {
+    const path = window.location.pathname;
+    if (path === '/showcase') return 'showcase';
+    if (path === '/blog') return 'blog';
+    if (path === '/about') return 'about';
+    if (path === '/schedule') return 'schedule';
+    return 'home';
+  };
+
   const [titleLine1, setTitleLine1] = useState('');
   const [titleLine2, setTitleLine2] = useState('');
   const [isLine1Complete, setIsLine1Complete] = useState(false);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
 
   // State to manage current view
-  // 'home' | 'schedule' | 'about' | 'showcase' | 'blog'
-  const [currentView, setCurrentView] = useState<string>('home');
+  const [currentView, setCurrentView] = useState<string>(getViewFromPath());
   const [selectedService, setSelectedService] = useState<string>('General Inquiry');
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentView(getViewFromPath());
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   useEffect(() => {
     const line1Text = "Big AI for ";
@@ -59,30 +76,31 @@ const App: React.FC = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
+  const navigateTo = (view: string, path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentView(view);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleScheduleClick = (serviceName?: string) => {
     setSelectedService(serviceName || 'General Inquiry');
-    setCurrentView('schedule');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('schedule', '/schedule');
   };
 
   const handleAboutClick = () => {
-    setCurrentView('about');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('about', '/about');
   };
 
   const handleShowcaseClick = () => {
-    setCurrentView('showcase');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('showcase', '/showcase');
   };
 
   const handleBlogClick = () => {
-    setCurrentView('blog');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('blog', '/blog');
   };
 
   const handleBackHome = () => {
-    setCurrentView('home');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo('home', '/');
   }
 
   if (currentView === 'schedule') {
