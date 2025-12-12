@@ -6,16 +6,16 @@ export const ShowcasePage: React.FC = () => {
     const apps = [
         {
             title: "AI Product Mockup",
-            description: "Generate professional product mockups in seconds using advanced generative AI models. Perfect for marketing and presentations.",
-            image: "https://insights.ai.hephae.co/product_mockup_thumbnail.png",
-            tags: ["Image Generation", "Marketing"],
+            description: "Create stunning product mockups instantly. Upload your design and let Gemini place it in realistic, professional scenes.",
+            image: "/product_mockup_card.png",
+            tags: ["Gemini 1.5 Pro", "Image Generation", "Design"],
             link: "https://aistudio.google.com/apps/bundled/product_mockup?showPreview=true&showAssistant=true"
         },
         {
             title: "Marketing Business AI",
-            description: "An intelligent assistant for small businesses to create marketing strategies, content calendars, and ad copy.",
-            image: "https://insights.ai.hephae.co/marketing_ai_thumbnail.png", // Placeholder
-            tags: ["Text Generation", "Strategy"],
+            description: "Your expert marketing consultant. Generate comprehensive strategies, ad copy, and content calendars tailored to your business goals.",
+            image: "/marketing_ai_card.png",
+            tags: ["GPT-4o", "Strategy", "Copywriting"],
             link: "https://chatgpt.com/g/g-Wud3tXQj3-marketing-business-ai"
         }
     ];
