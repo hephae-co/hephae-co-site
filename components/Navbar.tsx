@@ -1,14 +1,22 @@
+```typescript
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
 interface NavbarProps {
   onScheduleClick: () => void;
   onAboutClick: () => void;
-  onShowcaseClick: () => void;
+  onToolkitClick: () => void;
   onBlogClick: () => void;
+  onHomeClick?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onScheduleClick, onAboutClick, onShowcaseClick, onBlogClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ 
+  onScheduleClick, 
+  onAboutClick, 
+  onToolkitClick, 
+  onBlogClick,
+  onHomeClick 
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -36,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScheduleClick, onAboutClick, o
   };
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
+    <nav className={`fixed w - full z - 50 transition - all duration - 300 ${ isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6' } `}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img
@@ -48,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onScheduleClick, onAboutClick, o
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#showcase" onClick={(e) => handleNavClick(e, onShowcaseClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Showcase Apps</a>
+          <a href="#toolkit" onClick={(e) => handleNavClick(e, onToolkitClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Toolkit for AI dummies</a>
           <a href="#services" onClick={handleServicesClick} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Services</a>
           <a href="#about" onClick={(e) => handleNavClick(e, onAboutClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
           <a href="#blog" onClick={(e) => handleNavClick(e, onBlogClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Blog</a>
