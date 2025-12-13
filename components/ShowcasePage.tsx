@@ -30,12 +30,12 @@ export const ShowcasePage: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pointer-events-none">
                 {/* Enable pointer events for content */}
                 <div>
-                    <div className="text-center mb-16 pointer-events-auto">
+                    <div className="text-center mb-16">
                         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            Showcase Apps
+                            Toolkit for AI dummies
                         </h1>
                         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                            Explore our collection of AI-powered applications designed to demonstrate the capabilities of modern generative models.
+                            A curated collection of custom GPTs and AI prototypes specifically designed to solve real-world challenges for small businesses.
                         </p>
                     </div>
 

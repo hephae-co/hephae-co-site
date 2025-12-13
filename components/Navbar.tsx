@@ -1,4 +1,3 @@
-```typescript
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
@@ -10,12 +9,12 @@ interface NavbarProps {
   onHomeClick?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ 
-  onScheduleClick, 
-  onAboutClick, 
-  onToolkitClick, 
+export const Navbar: React.FC<NavbarProps> = ({
+  onScheduleClick,
+  onAboutClick,
+  onToolkitClick,
   onBlogClick,
-  onHomeClick 
+  onHomeClick
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -44,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <nav className={`fixed w - full z - 50 transition - all duration - 300 ${ isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6' } `}>
+    <nav className={`fixed w - full z - 50 transition - all duration - 300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'} `}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img
@@ -79,7 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col space-y-4 shadow-xl">
-          <a href="#showcase" className="text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onShowcaseClick)}>Showcase Apps</a>
+          <a href="#toolkit" className="text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onToolkitClick)}>Toolkit for AI dummies</a>
           <a href="#services" className="text-gray-600 font-medium" onClick={handleServicesClick}>Services</a>
           <a href="#about" className="text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onAboutClick)}>About</a>
           <a href="#blog" className="text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onBlogClick)}>Blog</a>
