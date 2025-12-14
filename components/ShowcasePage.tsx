@@ -6,12 +6,25 @@ interface ShowcasePageProps {
     category: 'hephae' | 'curated';
 }
 
+interface AppData {
+    title: string;
+    description: string;
+    image?: string;
+    customVisual?: React.ReactNode;
+    tags: string[];
+    link: string;
+}
+
 export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
-    const hephaeApps = [
+    const hephaeApps: AppData[] = [
         {
             title: "AI Readiness Quest",
             description: "Assess your business's AI maturity level with our interactive quest. Get a personalized report and badge.",
-            image: "/foot_traffic_card.png", // Placeholder
+            customVisual: (
+                <div className="w-full h-full flex items-center justify-center bg-slate-50">
+                    <div className="text-7xl mb-2 animate-float drop-shadow-lg filter hue-rotate-15">🚀</div>
+                </div>
+            ),
             tags: ["Assessment", "Strategy", "Gemini Pro"],
             link: "https://ai-readiness-quest-1096334123076.us-west1.run.app/"
         },
@@ -31,7 +44,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
         }
     ];
 
-    const curatedApps = [
+    const curatedApps: AppData[] = [
         {
             title: "AI Product Mockup",
             description: "Create stunning product mockups instantly. Upload your design and let Gemini place it in realistic, professional scenes.",
@@ -84,16 +97,20 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
                             >
                                 <div className="h-48 overflow-hidden relative">
                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 group-hover:opacity-0 transition-opacity duration-300" />
-                                    <img
-                                        src={app.image}
-                                        alt={app.title}
-                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                                        onError={(e) => {
-                                            // Fallback gradient if image fails
-                                            (e.target as HTMLImageElement).style.display = 'none';
-                                            (e.target as HTMLImageElement).parentElement!.classList.add('bg-gradient-to-br', 'from-blue-100', 'to-purple-100');
-                                        }}
-                                    />
+                                    {app.customVisual ? (
+                                        app.customVisual
+                                    ) : (
+                                        <img
+                                            src={app.image}
+                                            alt={app.title}
+                                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                            onError={(e) => {
+                                                // Fallback gradient if image fails
+                                                (e.target as HTMLImageElement).style.display = 'none';
+                                                (e.target as HTMLImageElement).parentElement!.classList.add('bg-gradient-to-br', 'from-blue-100', 'to-purple-100');
+                                            }}
+                                        />
+                                    )}
                                 </div>
 
                                 <div className="p-6 flex flex-col flex-grow">
