@@ -10,6 +10,7 @@ interface AppData {
     title: string;
     description: string;
     image?: string;
+    imageFit?: 'cover' | 'contain';
     customVisual?: React.ReactNode;
     tags: string[];
     link: string;
@@ -32,6 +33,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
             title: "Local Foot Traffic Forecaster",
             description: "Analyze and forecast local foot traffic trends to optimize your business operations and marketing.",
             image: "https://storage.googleapis.com/everything-hephae/foot-traffic-logo.svg",
+            imageFit: 'contain',
             tags: ["Analytics", "Forecasting", "Data"],
             link: "https://local-foot-traffic-forecaster-1096334123076.us-west1.run.app/"
         },
@@ -103,7 +105,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
                                         <img
                                             src={app.image}
                                             alt={app.title}
-                                            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                            className={`w-full h-full object-${app.imageFit || 'cover'} transform group-hover:scale-105 transition-transform duration-500 ${app.imageFit === 'contain' ? 'p-4' : ''}`}
                                             onError={(e) => {
                                                 // Fallback gradient if image fails
                                                 (e.target as HTMLImageElement).style.display = 'none';
