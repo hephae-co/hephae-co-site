@@ -1,23 +1,24 @@
 steps:
 # Build the container image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/hephae-co-dev/hephae-website', '.']
+  args: ['build', '-t', 'gcr.io/hephae-co-dev/hephae-co-site', '.']
 # Push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/hephae-co-dev/hephae-website']
+  args: ['push', 'gcr.io/hephae-co-dev/hephae-co-site']
 # Deploy container image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args:
   - 'run'
   - 'deploy'
-  - 'hephae-co-genai-consulting'
+  - 'hephae-co-site-main'
   - '--image'
-  - 'gcr.io/hephae-co-dev/hephae-website'
+  - 'gcr.io/hephae-co-dev/hephae-co-site'
   - '--region'
-  - 'us-west1'
+  - 'us-central1'
   - '--platform'
   - 'managed'
   - '--allow-unauthenticated'
 images:
-- 'gcr.io/hephae-co-dev/hephae-website'
+- 'gcr.io/hephae-co-dev/hephae-co-site'
+serviceAccount: 'projects/hephae-co-dev/serviceAccounts/github-actions-robot@hephae-co-dev.iam.gserviceaccount.com'
