@@ -210,7 +210,7 @@ const App: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pointer-events-auto mt-12 relative z-20">
             <a
-              href="https://ai-readiness-quest-1096334123076.us-west1.run.app"
+              href={process.env.AI_READINESS_QUEST_URL!}
               target="_blank"
               rel="noopener noreferrer"
               className="animate-pulse-ring bg-gradient-to-r from-blue-600 to-violet-600 text-white px-8 py-4 rounded-full font-bold text-lg md:text-xl hover:shadow-[0_0_40px_rgba(79,70,229,0.6)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 shadow-[0_10px_20px_rgba(0,0,0,0.2)] border border-white/20 group"
@@ -219,7 +219,7 @@ const App: React.FC = () => {
             </a>
 
             <a
-              href="https://aetheria-ai-restaurant-737598413072.us-central1.run.app/"
+              href={process.env.AETHERIA_AI_RESTAURANT_URL!}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white/80 backdrop-blur-md text-gray-900 border border-white/40 px-8 py-4 rounded-full font-bold text-lg md:text-xl hover:bg-white transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3 shadow-[0_10px_20px_rgba(0,0,0,0.05)] hover:shadow-[0_10px_20px_rgba(0,0,0,0.1)]"

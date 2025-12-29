@@ -28,7 +28,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
                 </div>
             ),
             tags: ["Assessment", "Strategy", "Gemini Pro"],
-            link: "https://ai-readiness-quest-1096334123076.us-west1.run.app/"
+            link: process.env.AI_READINESS_QUEST_URL!
         },
         {
             title: "Local Foot Traffic Forecaster",
@@ -36,7 +36,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
             image: "https://storage.googleapis.com/everything-hephae/foot-traffic-logo.svg",
             imageFit: 'contain',
             tags: ["Analytics", "Forecasting", "Data"],
-            link: "https://local-foot-traffic-forecaster-1096334123076.us-west1.run.app/"
+            link: process.env.TRAFFIC_FORECASTER_URL!
         },
         {
             title: "Aetheria: AI Restaurant",
@@ -44,7 +44,7 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
             image: "https://storage.googleapis.com/everything-hephae/aetheria-logo.svg",
             imageFit: 'contain',
             tags: ["Demo", "Hospitality", "Interactive"],
-            link: "https://aetheria-ai-restaurant-737598413072.us-central1.run.app/"
+            link: process.env.AETHERIA_AI_RESTAURANT_URL!
         }
     ];
 
@@ -54,14 +54,14 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
             description: "Create stunning product mockups instantly. Upload your design and let Gemini place it in realistic, professional scenes.",
             video: "https://www.gstatic.com/aistudio/starter-apps/thumbnails/product_mockup_viz.mp4",
             tags: ["Gemini 3.0", "Image Generation", "Design"],
-            link: "https://aistudio.google.com/apps/bundled/product_mockup?showPreview=true&showAssistant=true"
+            link: process.env.AI_PRODUCT_MOCKUP_URL!
         },
         {
             title: "Marketing Business AI",
             description: "Your expert marketing consultant. Generate comprehensive strategies, ad copy, and content calendars tailored to your business goals.",
             image: "https://roi.dog/_next/image?url=%2Froi%20dog%20logo.jpg&w=96&q=75",
             tags: ["GPT-4o", "Strategy", "Copywriting"],
-            link: "https://chatgpt.com/g/g-Wud3tXQj3-marketing-business-ai"
+            link: process.env.MARKETING_BUSINESS_AI_URL!
         }
     ];
 
