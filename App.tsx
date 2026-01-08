@@ -10,7 +10,8 @@ import { AboutPage } from './components/AboutPage';
 import { ShowcasePage } from './components/ShowcasePage';
 import { BlogPage } from './components/BlogPage';
 import { SERVICE_TIERS } from './constants';
-import { ArrowRight, Utensils } from 'lucide-react';
+import { ArrowRight, Utensils, ChevronDown } from 'lucide-react';
+import { useRef } from 'react';
 
 import { BuildAIProfile } from './components/BuildAIProfile';
 
@@ -37,13 +38,27 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>(getViewFromPath());
   const [selectedService, setSelectedService] = useState<string>('General Inquiry');
 
+  const [isBottomGetStartedOpen, setIsBottomGetStartedOpen] = useState(false);
+  const bottomDropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handlePopState = () => {
       setCurrentView(getViewFromPath());
     };
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (bottomDropdownRef.current && !bottomDropdownRef.current.contains(event.target as Node)) {
+        setIsBottomGetStartedOpen(false);
+      }
+    };
+
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
@@ -279,13 +294,43 @@ const App: React.FC = () => {
 
           {/* Global CTA */}
           <div className="mt-16 text-center">
-            <button
-              onClick={() => handleScheduleClick()}
-              className="bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3 mx-auto"
-            >
-              Start Your Transformation <ArrowRight size={20} />
-            </button>
-            <p className="text-gray-500 mt-4 text-sm">Select your preferred service in the next step.</p>
+            <div className="relative inline-block text-left" ref={bottomDropdownRef}>
+              <button
+                onClick={() => setIsBottomGetStartedOpen(!isBottomGetStartedOpen)}
+                className="bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3 mx-auto"
+              >
+                Start Your Transformation <ChevronDown size={20} className={`ml-1 transition-transform ${isBottomGetStartedOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isBottomGetStartedOpen && (
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 animate-fade-in-up z-30 text-left">
+                  <a
+                    href="/build-ai-profile"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsBottomGetStartedOpen(false);
+                      handleBuildProfileClick();
+                    }}
+                    className="block px-6 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  >
+                    <span className="block font-bold text-lg">Build AI Profile</span>
+                    <span className="block text-sm text-gray-400 font-normal mt-1">Get a custom analysis for your business</span>
+                  </a>
+                  <div className="h-px bg-gray-100 my-1"></div>
+                  <button
+                    onClick={() => {
+                      setIsBottomGetStartedOpen(false);
+                      handleScheduleClick('General Inquiry');
+                    }}
+                    className="block w-full text-left px-6 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  >
+                    <span className="block font-bold text-lg">Schedule an Intro Call</span>
+                    <span className="block text-sm text-gray-400 font-normal mt-1">Speak directly with an AI expert</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            <p className="text-gray-500 mt-4 text-sm">Select your preferred path above.</p>
           </div>
         </div>
       </section>
