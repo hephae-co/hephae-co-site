@@ -26,7 +26,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isToolkitDropdownOpen, setIsToolkitDropdownOpen] = useState(false);
+  const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const getStartedDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,10 +36,13 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
     window.addEventListener('scroll', handleScroll);
 
-    // Click outside handler for dropdown
+    // Click outside handler for dropdowns
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsToolkitDropdownOpen(false);
+      }
+      if (getStartedDropdownRef.current && !getStartedDropdownRef.current.contains(event.target as Node)) {
+        setIsGetStartedOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -61,6 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     e.preventDefault();
     setIsMobileMenuOpen(false);
     setIsToolkitDropdownOpen(false);
+    setIsGetStartedOpen(false);
     if (handler) handler();
   };
 
@@ -112,37 +118,37 @@ export const Navbar: React.FC<NavbarProps> = ({
           <a href="#blog" onClick={(e) => handleNavClick(e, onBlogClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Blog</a>
 
           {/* Get Started Dropdown (CTA) */}
-          <div className="relative group">
+          <div className="relative" ref={getStartedDropdownRef}>
             <button
+              onClick={() => setIsGetStartedOpen(!isGetStartedOpen)}
               className="bg-black text-white px-6 py-2.5 rounded-full font-medium hover:bg-gray-800 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-1"
             >
-              Get Started <ChevronDown size={16} />
+              Get Started <ChevronDown size={16} className={`ml-1 transition-transform ${isGetStartedOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            {/* Hover-based dropdown for simplicity, matching the toolkit one somewhat but using CSS group-hover for pure CSS approach or we can use state. 
-                The toolkit one uses click. Let's stick to CSS hover for the button or click. 
-                Actually, the existing dropdown uses click. Let's use CSS hover for this one to be 'stylized' and smoother, 
-                or stick to consistency.
-                Let's use a pure CSS hover approach for a "dropdown button" feel often seen in CTAs.
-            */}
-            <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 hidden group-hover:block animate-fade-in-up z-50">
-              <a
-                href="/build-ai-profile"
-                onClick={(e) => handleNavClick(e, onBuildProfileClick)}
-                className="block px-4 py-3 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium"
-              >
-                Build AI Profile
-                <span className="block text-xs text-gray-400 font-normal mt-0.5">Custom analysis for your biz</span>
-              </a>
-              <div className="h-px bg-gray-100 my-1"></div>
-              <button
-                onClick={onScheduleClick}
-                className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium"
-              >
-                Schedule an Intro Call
-                <span className="block text-xs text-gray-400 font-normal mt-0.5">Speak with an expert</span>
-              </button>
-            </div>
+            {isGetStartedOpen && (
+              <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 animate-fade-in-up z-50">
+                <a
+                  href="/build-ai-profile"
+                  onClick={(e) => handleNavClick(e, onBuildProfileClick)}
+                  className="block px-4 py-3 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium"
+                >
+                  Build AI Profile
+                  <span className="block text-xs text-gray-400 font-normal mt-0.5">Custom analysis for your biz</span>
+                </a>
+                <div className="h-px bg-gray-100 my-1"></div>
+                <button
+                  onClick={() => {
+                    setIsGetStartedOpen(false);
+                    onScheduleClick();
+                  }}
+                  className="block w-full text-left px-4 py-3 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-colors font-medium"
+                >
+                  Schedule an Intro Call
+                  <span className="block text-xs text-gray-400 font-normal mt-0.5">Speak with an expert</span>
+                </button>
+              </div>
+            )}
           </div>
 
         </div>
