@@ -12,6 +12,8 @@ import { BlogPage } from './components/BlogPage';
 import { SERVICE_TIERS } from './constants';
 import { ArrowRight, Utensils } from 'lucide-react';
 
+import { BuildAIProfile } from './components/BuildAIProfile';
+
 const App: React.FC = () => {
   // Helper to get view from path
   const getViewFromPath = () => {
@@ -22,6 +24,7 @@ const App: React.FC = () => {
     if (path === '/blog') return 'blog';
     if (path === '/about') return 'about';
     if (path === '/schedule') return 'schedule';
+    if (path === '/build-ai-profile') return 'build-ai-profile';
     return 'home';
   };
 
@@ -105,6 +108,10 @@ const App: React.FC = () => {
     navigateTo('blog', '/blog');
   };
 
+  const handleBuildProfileClick = () => {
+    navigateTo('build-ai-profile', '/build-ai-profile');
+  };
+
   const handleBackHome = () => {
     navigateTo('home', '/');
   };
@@ -131,6 +138,23 @@ const App: React.FC = () => {
     return <AboutPage onBack={handleBackHome} />;
   }
 
+  if (currentView === 'build-ai-profile') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar
+          onScheduleClick={() => handleScheduleClick('General Inquiry')}
+          onAboutClick={handleAboutClick}
+          onHephaeAppsClick={handleHephaeAppsClick}
+          onCuratedAppsClick={handleCuratedAppsClick}
+          onBlogClick={handleBlogClick}
+          onHomeClick={handleBackHome}
+          onBuildProfileClick={handleBuildProfileClick}
+        />
+        <BuildAIProfile />
+      </div>
+    );
+  }
+
   if (currentView === 'toolkit-hephae' || currentView === 'toolkit-curated') {
     return (
       <div className="min-h-screen bg-white">
@@ -141,6 +165,7 @@ const App: React.FC = () => {
           onCuratedAppsClick={handleCuratedAppsClick}
           onBlogClick={handleBlogClick}
           onHomeClick={handleBackHome}
+          onBuildProfileClick={handleBuildProfileClick}
         />
         <ShowcasePage category={currentView === 'toolkit-hephae' ? 'hephae' : 'curated'} />
         <Footer />
@@ -158,6 +183,7 @@ const App: React.FC = () => {
           onCuratedAppsClick={handleCuratedAppsClick}
           onBlogClick={handleBlogClick}
           onHomeClick={handleBackHome}
+          onBuildProfileClick={handleBuildProfileClick}
         />
         <BlogPage />
         <Footer />
@@ -174,6 +200,7 @@ const App: React.FC = () => {
         onCuratedAppsClick={handleCuratedAppsClick}
         onBlogClick={handleBlogClick}
         onHomeClick={handleBackHome}
+        onBuildProfileClick={handleBuildProfileClick}
       />
 
       {/* Hero Section */}

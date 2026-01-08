@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+// ... imports
+// (Note: I will use a larger replacement chunk to ensure I catch both desktop and mobile menus correctly without conflicts)
 
 interface NavbarProps {
   onScheduleClick: () => void;
@@ -8,6 +8,7 @@ interface NavbarProps {
   onCuratedAppsClick: () => void;
   onBlogClick: () => void;
   onHomeClick?: () => void;
+  onBuildProfileClick?: () => void; // New prop
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -16,7 +17,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onHephaeAppsClick,
   onCuratedAppsClick,
   onBlogClick,
-  onHomeClick
+  onHomeClick,
+  onBuildProfileClick
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -52,11 +54,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, handler: () => void) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, handler?: () => void) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
     setIsToolkitDropdownOpen(false);
-    handler();
+    if (handler) handler();
   };
 
   return (
@@ -102,6 +104,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
+          <a href="/build-ai-profile" onClick={(e) => handleNavClick(e, onBuildProfileClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Build AI Profile</a>
           <a href="#services" onClick={handleServicesClick} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Services</a>
           <a href="#about" onClick={(e) => handleNavClick(e, onAboutClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</a>
           <a href="#blog" onClick={(e) => handleNavClick(e, onBlogClick)} className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Blog</a>
@@ -130,6 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <a href="#curated-apps" className="block py-2 text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onCuratedAppsClick)}>Curated Apps</a>
           </div>
 
+          <a href="/build-ai-profile" className="text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onBuildProfileClick)}>Build AI Profile</a>
           <a href="#services" className="text-gray-600 font-medium" onClick={handleServicesClick}>Services</a>
           <a href="#about" className="text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onAboutClick)}>About</a>
           <a href="#blog" className="text-gray-600 font-medium" onClick={(e) => handleNavClick(e, onBlogClick)}>Blog</a>

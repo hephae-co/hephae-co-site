@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hephae: Intelligent Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#3b82f6',
+                            cyan: '#06b6d4',
+                        }
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'blob': 'blob 10s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc; /* Slate 50 (White-ish) */
+            color: #0f172a; /* Slate 900 */
+            overflow: hidden; 
+        }
+
+        /* Interactive Input Styling - Light Mode */
+        .big-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #cbd5e1; /* Slate 300 */
+            font-size: 2rem;
+            width: 100%;
+            text-align: center;
+            color: #0f172a;
+            padding-bottom: 0.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .big-input:focus {
+            border-bottom-color: #3b82f6;
+            box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.2);
+        }
+
+        .big-input::placeholder {
+            color: #94a3b8; /* Slate 400 */
+        }
+
+        /* Secondary Input for Usage Context */
+        .sub-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid #cbd5e1;
+            font-size: 1.25rem;
+            width: 80%;
+            text-align: center;
+            color: #475569;
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            outline: none;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        .sub-input:focus {
+            border-color: #3b82f6;
+            background: white;
+        }
+
+        /* Question Container Transition */
+        .question-card {
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .question-card.active {
+            display: flex;
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Button - Light Mode */
+        .brand-btn {
+            background: #ffffff;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            padding: 12px 32px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 2rem;
+            cursor: pointer;
+            border-radius: 9999px; /* Pill shape */
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+        }
+
+        .brand-btn:hover {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Processing/Loading State */
+        .processing-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .terminal-text {
+            font-family: 'Courier New', monospace;
+            color: #3b82f6;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        /* Memory Buffer Sidebar - Light Mode */
+        .memory-buffer {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 250px;
+            z-index: 30;
+            font-family: 'Courier New', monospace;
+            display: none; 
+        }
+        
+        @media (min-width: 768px) {
+            .memory-buffer {
+                display: block;
+            }
+        }
+
+        .memory-item {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            padding-left: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .memory-item:hover {
+            color: #3b82f6;
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .memory-item span.label {
+            color: #334155;
+            font-weight: bold;
+        }
+        
+        .memory-item:hover span.label {
+            color: #3b82f6;
+        }
+
+        /* Tags Styles */
+        .tag-chip {
+            animation: fadeIn 0.3s ease-out;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tag-chip:hover {
+            transform: scale(1.05);
+        }
+        .tag-primary {
+            background-color: #fef9c3 !important; /* Yellow 100 */
+            color: #854d0e !important; /* Yellow 800 */
+            border-color: #fde047 !important; /* Yellow 300 */
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.3) !important;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Helper animations for tool usage dialog */
+        .usage-dialog {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            height: 0;
+            overflow: hidden;
+        }
+        .usage-dialog.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            height: auto;
+            margin-top: 1rem;
+        }
+
+    </style>
+</head>
+<body class="h-screen flex flex-col items-center justify-center relative">
+
+    <!-- Background Animation (Blobs + Grid) -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden bg-slate-50">
+        <!-- Subtle Moving Blobs -->
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-cyan-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" style="animation-delay: 2s"></div>
+        <div class="absolute bottom-[-10%] left-[20%] w-[500px] h-[500px] bg-indigo-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" style="animation-delay: 4s"></div>
+        
+        <!-- Grid Overlay (Dark gray lines for white bg) -->
+        <div class="absolute inset-0" style="background-image: linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px); background-size: 50px 50px;"></div>
+    </div>
+
+    <!-- Top UI: Progress & Brand -->
+    <div class="absolute top-0 w-full p-8 flex justify-between items-center z-20">
+        <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+            <span class="text-xs font-mono text-blue-600 tracking-widest font-bold">HEPHAE_INTEL_SYSTEM</span>
+        </div>
+        <div class="flex gap-1" id="progress-dots">
+            <!-- Filled via JS -->
+        </div>
+    </div>
+
+    <!-- SIDEBAR: Memory Buffer (History) -->
+    <div class="memory-buffer" id="memory-buffer">
+        <div class="text-[10px] text-blue-400 mb-2 border-b border-blue-200 pb-1 tracking-widest uppercase font-bold">
+            // MEMORY BUFFER
+        </div>
+        <div id="memory-list">
+            <!-- Items injected here -->
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <main class="relative z-10 w-full flex flex-col items-center px-4 max-w-4xl mx-auto">
+        
+        <!-- Logo Animation -->
+        <div class="mb-10 animate-bounce-slow" id="main-logo-container">
+            <img src="https://insights.ai.hephae.co/hephae_logo_blue.png" alt="Hephae Logo" class="w-32 h-32 object-contain drop-shadow-xl" id="logo-core">
+        </div>
+
+        <!-- FORM CONTAINER -->
+        <form id="wizard-form" onsubmit="return false;" class="w-full flex justify-center">
+
+            <!-- STEP 0: Welcome -->
+            <div class="question-card active" data-step="0">
+                <h1 class="text-3xl md:text-5xl font-display font-bold text-center mb-4 text-slate-900">
+                    Initialize Analysis
+                </h1>
+                <p class="text-slate-500 text-lg mb-8 text-center max-w-md leading-relaxed">
+                    Welcome to Hephae. Let's construct your business intelligence profile together.
+                </p>
+                <button class="brand-btn" onclick="nextStep()">BEGIN SESSION</button>
+            </div>
+
+            <!-- STEP 1: Business Name -->
+            <div class="question-card" data-step="1" data-label="ENTITY">
+                <label class="text-blue-600 text-sm font-bold font-mono tracking-widest mb-4">IDENTIFICATION</label>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-8 text-slate-900">
+                    What is the name of your entity?
+                </h2>
+                <input type="text" name="businessName" class="big-input" placeholder="Type business name..." autocomplete="off" onkeypress="handleEnter(event)">
+                <button class="brand-btn" onclick="nextStep()">CONFIRM</button>
+            </div>
+
+            <!-- STEP 2: Website -->
+            <div class="question-card" data-step="2" data-label="URL">
+                <label class="text-blue-600 text-sm font-bold font-mono tracking-widest mb-4">DIGITAL FOOTPRINT</label>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-8 text-slate-900">
+                    Where can we find <span class="business-name-display text-blue-600">you</span> online?
+                </h2>
+                <input type="url" name="website" class="big-input" placeholder="www.example.com" autocomplete="off" onkeypress="handleEnter(event)">
+                <button class="brand-btn" onclick="nextStep()">NEXT</button>
+                <button class="text-slate-400 text-sm mt-4 hover:text-blue-600 transition underline-offset-4 hover:underline" onclick="nextStep()">Skip this step</button>
+            </div>
+
+            <!-- STEP 3: The Problem (Pain Point) -->
+            <div class="question-card" data-step="3" data-label="OBJ">
+                <label class="text-blue-600 text-sm font-bold font-mono tracking-widest mb-4">CORE OBJECTIVE</label>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-3 text-slate-900">
+                    What is the #1 problem to solve?
+                </h2>
+                <p class="text-slate-400 text-sm mb-8">Be specific. I learn faster with details.</p>
+                <textarea name="problem" class="big-input text-xl resize-none text-slate-800" rows="2" placeholder="e.g. Too much time spent on manual data entry..." onkeypress="handleEnter(event)"></textarea>
+                <button class="brand-btn" onclick="nextStep()">ANALYZE THIS</button>
+            </div>
+
+            <!-- STEP 4: Tools (UPDATED) -->
+            <div class="question-card" data-step="4" data-label="INFRA">
+                <label class="text-blue-600 text-sm font-bold font-mono tracking-widest mb-4">CURRENT INFRASTRUCTURE</label>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-4 text-slate-900">
+                    What tools power your operations?
+                </h2>
+                
+                <!-- Tool Tag Container -->
+                <div id="tool-tags-container" class="flex flex-wrap gap-2 justify-center mb-6 min-h-[32px]"></div>
+
+                <!-- Main Tool Name Input -->
+                <input type="text" name="tools" id="tool-name-input" class="big-input" placeholder="Name (e.g. Salesforce)..." autocomplete="off" onkeypress="handleToolNameEnter(event)">
+                
+                <!-- Secondary Tool Usage Input (Hidden initially) -->
+                <div id="tool-usage-container" class="usage-dialog flex flex-col items-center w-full">
+                    <label class="text-slate-500 text-sm font-mono mb-2">How do you use <span id="current-tool-label" class="text-blue-600 font-bold">it</span>? (Optional)</label>
+                    <input type="text" id="tool-usage-input" class="sub-input" placeholder="e.g. For tracking leads..." autocomplete="off" onkeypress="handleToolUsageEnter(event)">
+                    <div class="text-xs text-slate-400 mt-2">Press [ENTER] to save tool</div>
+                </div>
+
+                <div class="text-slate-400 text-xs mt-3 font-mono" id="tool-hint">
+                    Press <span class="font-bold text-blue-600">[ENTER]</span> to add tool details
+                </div>
+                
+                <button class="brand-btn" onclick="nextStep()">NEXT STEP</button>
+            </div>
+
+            <!-- STEP 5: Socials (UPDATED) -->
+            <div class="question-card" data-step="5" data-label="NET">
+                <label class="text-blue-600 text-sm font-bold font-mono tracking-widest mb-4">NETWORK NODES</label>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-4 text-slate-900">
+                    Add your social handles
+                </h2>
+                
+                <!-- Social Tag Container -->
+                <div id="social-tags-container" class="flex flex-wrap gap-2 justify-center mb-6 min-h-[32px]"></div>
+
+                <input type="text" name="socials" class="big-input" placeholder="Type handle & press Enter..." autocomplete="off" onkeypress="handleSocialEnter(event)">
+                <div class="text-slate-400 text-xs mt-3 font-mono">
+                    Click a tag to set as <span class="text-yellow-600 font-bold">★ PRIMARY</span>
+                </div>
+                
+                <button class="brand-btn" onclick="nextStep()">NEXT</button>
+            </div>
+
+            <!-- STEP 6: Competitor (NEW) -->
+            <div class="question-card" data-step="6" data-label="COMP">
+                <label class="text-blue-600 text-sm font-bold font-mono tracking-widest mb-4">COMPETITIVE BENCHMARK</label>
+                <h2 class="text-3xl md:text-4xl font-display font-bold text-center mb-8 text-slate-900">
+                    Is there a competitor doing it well?
+                </h2>
+                <input type="text" name="competitor" class="big-input" placeholder="Competitor Name or URL..." autocomplete="off" onkeypress="handleEnter(event)">
+                <button class="brand-btn" onclick="finishForm()">FINALIZE PROFILE</button>
+                <button class="text-slate-400 text-sm mt-4 hover:text-blue-600 transition underline-offset-4 hover:underline" onclick="finishForm()">No specific competitor</button>
+            </div>
+
+        </form>
+
+        <!-- Dynamic Hint -->
+        <div class="mt-16 text-slate-400 text-xs font-mono animate-pulse">
+            PRESS [ENTER] TO CONTINUE
+        </div>
+
+    </main>
+
+    <!-- PROCESSING OVERLAY -->
+    <div id="processing-screen" class="processing-overlay">
+        <!-- Spinner -->
+        <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+        <div id="terminal-output" class="terminal-text text-lg">INITIALIZING...</div>
+    </div>
+
+    <!-- SUCCESS SCREEN -->
+    <div id="success-screen" class="hidden absolute inset-0 z-40 flex-col items-center justify-center bg-white p-8 text-center animate-fade-in">
+        <div class="mb-8">
+            <img src="https://insights.ai.hephae.co/hephae_logo_blue.png" alt="Hephae Logo" class="w-32 h-32 object-contain drop-shadow-xl animate-bounce-slow">
+        </div>
+        <h1 class="text-4xl md:text-6xl font-display font-bold text-slate-900 mb-4">Transmission Received.</h1>
+        <p class="text-slate-500 text-xl max-w-2xl italic mb-4">
+            "We have top men working on it right now. Top... men."
+        </p>
+        <p class="text-slate-400 text-sm font-mono mb-8">
+            (Translation: Our veteran consultants are analyzing your data and will be in touch shortly.)
+        </p>
+        
+        <div class="mt-4 p-4 border border-slate-200 rounded-lg bg-slate-50 font-mono text-sm text-left w-full max-w-md shadow-sm">
+            <div class="text-slate-400 mb-2 border-b border-slate-200 pb-1">// SYSTEM LOG</div>
+            <div class="text-green-600 font-bold">> STATUS: SECURE</div>
+            <div class="text-green-600 font-bold">> NEXT_STEP: HUMAN_PROTOCOL_INITIATED</div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <span class="text-slate-400 text-xs">Questions? </span>
+            <a href="mailto:contact@hephae.co" class="text-slate-500 hover:text-blue-600 text-xs font-mono hover:underline transition-colors">
+                contact@hephae.co
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 7; // Increased for new Step 6
+        
+        // Data Store
+        let socialHandles = []; // Array of objects: { name: string, isPrimary: boolean }
+        let toolTags = [];      // Array of objects: { name: string, usage: string }
+        let tempToolName = '';  // Temporary store for tool name during 2-step process
+
+        // Setup Progress Dots
+        const progressContainer = document.getElementById('progress-dots');
+        for(let i=0; i<totalSteps; i++) {
+            const dot = document.createElement('div');
+            dot.className = `w-12 h-1 bg-slate-200 rounded transition-colors duration-300 step-dot-${i}`;
+            progressContainer.appendChild(dot);
+        }
+
+        // Handle typing visuals
+        const inputs = document.querySelectorAll('input, textarea');
+        const logo = document.getElementById('logo-core');
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                if(logo) {
+                    logo.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        logo.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            });
+        });
+
+        function updateProgress() {
+            for(let i=0; i<totalSteps; i++) {
+                const dot = document.querySelector(`.step-dot-${i}`);
+                if (i <= currentStep) {
+                    dot.classList.remove('bg-slate-200');
+                    dot.classList.add('bg-blue-500');
+                } else {
+                    dot.classList.add('bg-slate-200');
+                    dot.classList.remove('bg-blue-500');
+                }
+            }
+            updateMemoryBuffer();
+        }
+
+        // --- TAG HANDLERS (TOOLS) ---
+
+        function handleToolNameEnter(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = e.target;
+                const val = input.value.trim();
+                
+                if (val) {
+                    // Start 2-step process
+                    tempToolName = val;
+                    // Update UI to show secondary input
+                    document.getElementById('tool-name-input').style.display = 'none'; // Hide main
+                    document.getElementById('current-tool-label').innerText = val;
+                    document.getElementById('tool-usage-container').classList.add('visible');
+                    document.getElementById('tool-hint').style.display = 'none';
+                    // Focus secondary
+                    setTimeout(() => document.getElementById('tool-usage-input').focus(), 100);
+                } else {
+                    nextStep(); // Move to next if empty
+                }
+            }
+        }
+
+        function handleToolUsageEnter(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const usageVal = e.target.value.trim();
+                
+                // Add the complete tool object
+                addToolTag(tempToolName, usageVal);
+                
+                // Reset UI for next tool
+                e.target.value = '';
+                document.getElementById('tool-name-input').value = '';
+                document.getElementById('tool-name-input').style.display = 'block';
+                document.getElementById('tool-usage-container').classList.remove('visible');
+                document.getElementById('tool-hint').style.display = 'block';
+                setTimeout(() => document.getElementById('tool-name-input').focus(), 100);
+            }
+        }
+
+        function addToolTag(name, usage) {
+            toolTags.push({ name: name, usage: usage });
+            renderToolTags();
+            updateMemoryBuffer();
+        }
+
+        function renderToolTags() {
+            const container = document.getElementById('tool-tags-container');
+            container.innerHTML = toolTags.map((tool) => 
+                `<div class="tag-chip px-4 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-bold font-mono border border-blue-200 shadow-sm flex flex-col items-center leading-tight">
+                    <span>${tool.name}</span>
+                    ${tool.usage ? `<span class="text-[10px] text-blue-500 font-normal border-t border-blue-200 mt-0.5 pt-0.5">${tool.usage}</span>` : ''}
+                </div>`
+            ).join('');
+        }
+
+        // --- TAG HANDLERS (SOCIALS) ---
+
+        function handleSocialEnter(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = e.target;
+                const val = input.value.trim();
+                
+                if (val) {
+                    addSocialTag(val);
+                    input.value = ''; 
+                } else {
+                    nextStep(); // Move to next if empty
+                }
+            }
+        }
+
+        function addSocialTag(text) {
+            socialHandles.push({ name: text, isPrimary: false });
+            renderSocialTags();
+            updateMemoryBuffer();
+        }
+
+        function toggleSocialPrimary(index) {
+            // Set all to false first (single primary logic)
+            socialHandles.forEach((h, i) => {
+                if (i === index) h.isPrimary = !h.isPrimary; // Toggle clicked
+                else h.isPrimary = false; // Unset others
+            });
+            renderSocialTags();
+        }
+
+        function renderSocialTags() {
+            const container = document.getElementById('social-tags-container');
+            container.innerHTML = socialHandles.map((handle, index) => {
+                const primaryClass = handle.isPrimary ? 'tag-primary' : 'bg-blue-100 text-blue-700 border-blue-200';
+                const starIcon = handle.isPrimary ? '<span class="mr-1">★</span>' : '';
+                
+                return `<span onclick="toggleSocialPrimary(${index})" class="tag-chip px-4 py-1.5 rounded-full text-sm font-bold font-mono border shadow-sm ${primaryClass}">
+                    ${starIcon}${handle.name}
+                </span>`;
+            }).join('');
+        }
+
+        // --- MEMORY BUFFER ---
+        function updateMemoryBuffer() {
+            const container = document.getElementById('memory-list');
+            container.innerHTML = ''; 
+
+            for(let i=1; i < totalSteps; i++) {
+                const card = document.querySelector(`.question-card[data-step="${i}"]`);
+                const input = card.querySelector('input, textarea');
+                const label = card.dataset.label || `STEP_${i}`;
+                
+                let displayValue = '';
+
+                if (i === 4) { // Tools
+                    if (toolTags.length > 0) displayValue = toolTags.map(t => t.name).join(', ');
+                } 
+                else if (i === 5) { // Socials
+                    if (socialHandles.length > 0) displayValue = socialHandles.map(s => s.name + (s.isPrimary ? '*' : '')).join(', ');
+                }
+                else if (input) {
+                    displayValue = input.value.trim();
+                }
+                
+                if (displayValue !== '') {
+                    const item = document.createElement('div');
+                    item.className = 'memory-item group';
+                    item.innerHTML = `
+                        <span class="label group-hover:text-blue-500">[${label}]</span> 
+                        <span class="text-slate-500 max-w-[150px] inline-block align-bottom truncate">${displayValue}</span>
+                    `;
+                    item.onclick = () => jumpToStep(i);
+                    container.appendChild(item);
+                }
+            }
+        }
+
+        function jumpToStep(stepIndex) {
+            const currentCard = document.querySelector(`.question-card[data-step="${currentStep}"]`);
+            if (currentCard) currentCard.classList.remove('active');
+
+            currentStep = stepIndex;
+            const targetCard = document.querySelector(`.question-card[data-step="${currentStep}"]`);
+            if (targetCard) targetCard.classList.add('active');
+            
+            // Focus appropriate input
+            if (stepIndex === 4 && document.getElementById('tool-usage-container').classList.contains('visible')) {
+                 setTimeout(() => document.getElementById('tool-usage-input').focus(), 100);
+            } else {
+                const input = targetCard.querySelector('input, textarea');
+                if (input) setTimeout(() => input.focus(), 100);
+            }
+
+            updateProgress();
+        }
+
+        // --- NAVIGATION ---
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') {
+                if (e.target.tagName === 'TEXTAREA' && !e.shiftKey) {
+                    e.preventDefault();
+                    nextStep();
+                } else if (e.target.tagName !== 'TEXTAREA') {
+                    if(currentStep === totalSteps - 1) finishForm();
+                    else nextStep();
+                }
+            }
+        }
+
+        function showProcessing(text, duration = 1500) {
+            return new Promise(resolve => {
+                const overlay = document.getElementById('processing-screen');
+                const output = document.getElementById('terminal-output');
+                output.innerText = text;
+                overlay.style.opacity = '1';
+                overlay.style.pointerEvents = 'all';
+                
+                let dots = 0;
+                const interval = setInterval(() => {
+                    dots = (dots + 1) % 4;
+                    output.innerText = text + '.'.repeat(dots);
+                }, 300);
+
+                setTimeout(() => {
+                    clearInterval(interval);
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    resolve();
+                }, duration);
+            });
+        }
+
+        async function nextStep() {
+            const currentCard = document.querySelector(`.question-card[data-step="${currentStep}"]`);
+            const input = currentCard.querySelector('input:not([type="hidden"]), textarea');
+            
+            // Check pending tags before moving (specifically for Step 5 social text)
+            if (currentStep === 5) {
+                const socialInput = currentCard.querySelector('input[name="socials"]');
+                if (socialInput && socialInput.value.trim() !== '') {
+                    addSocialTag(socialInput.value.trim());
+                    socialInput.value = '';
+                }
+            }
+
+            // Validation Logic
+            // Step 4 (Tools): Empty if no tags AND no active input value
+            if (currentStep === 4) {
+               if (toolTags.length === 0 && (!input || input.value.trim() === '')) {
+                   // Allow skipping if specifically clicked "Log Tools" button without input? 
+                   // Let's enforce adding at least one tool OR just let them pass if they really have none. 
+                   // Current logic: If empty, shake. 
+                   // To allow skip, user should type nothing and hit Enter (handled by handleToolNameEnter -> nextStep)
+               }
+            }
+            
+            // General Validation
+            if (currentStep > 0 && 
+               (currentStep !== 4 && currentStep !== 5) && // Skip tag arrays
+               input && input.value.trim() === '' && 
+               !input.name.includes('competitor') && 
+               !input.name.includes('website')) {
+                
+                currentCard.classList.add('animate-pulse');
+                setTimeout(() => currentCard.classList.remove('animate-pulse'), 500);
+                input.focus();
+                return; 
+            }
+
+            // Save Business Name
+            if (input && input.name === 'businessName') {
+                const nameDisplay = document.querySelector('.business-name-display');
+                if (nameDisplay) nameDisplay.innerText = input.value;
+            }
+
+            // Processing Interludes
+            if (currentStep === 3) {
+                await showProcessing('ANALYZING PAIN POINTS', 2000);
+            } else if (currentStep === 4) {
+                await showProcessing('SCANNING TECH STACK COMPATIBILITY', 1500);
+            }
+
+            // Transition
+            currentCard.classList.remove('active');
+            currentStep++;
+            updateProgress();
+
+            const nextCard = document.querySelector(`.question-card[data-step="${currentStep}"]`);
+            if (nextCard) {
+                nextCard.classList.add('active');
+                const nextInput = nextCard.querySelector('input, textarea');
+                if (nextInput) setTimeout(() => nextInput.focus(), 100);
+            }
+        }
+
+        async function finishForm() {
+            await showProcessing('COMPILING PROFILE', 2500);
+            document.querySelector('main').style.display = 'none';
+            document.getElementById('memory-buffer').style.display = 'none'; 
+            document.getElementById('main-logo-container').style.display = 'none'; // Hide logo in main form flow to avoid duplication
+            document.getElementById('success-screen').classList.remove('hidden');
+            document.getElementById('success-screen').classList.add('flex');
+            currentStep = totalSteps;
+            updateProgress();
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
