@@ -1,3 +1,6 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, X, ChevronDown } from 'lucide-react';
+
 // ... imports
 // (Note: I will use a larger replacement chunk to ensure I catch both desktop and mobile menus correctly without conflicts)
 
