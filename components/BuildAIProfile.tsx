@@ -218,7 +218,7 @@ export const BuildAIProfile: React.FC = () => {
             </div>
 
             {/* Top UI */}
-            <div className="absolute top-0 w-full p-8 flex justify-between items-center z-20">
+            <div className="w-full p-8 flex justify-between items-center z-20 mt-20 md:mt-24">
                 <div className="flex items-center gap-2">
                     <a href="/" className="w-3 h-3 bg-blue-500 rounded-full animate-pulse cursor-pointer"></a>
                     <span className="text-xs font-mono text-blue-600 tracking-widest font-bold">HEPHAE_INTEL_SYSTEM</span>
