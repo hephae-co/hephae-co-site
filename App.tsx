@@ -14,6 +14,7 @@ import { ArrowRight, Utensils, ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
 
 import { BuildAIProfile } from './components/BuildAIProfile';
+import { usePageMeta } from './usePageMeta';
 
 const App: React.FC = () => {
   // Helper to get view from path
@@ -37,6 +38,47 @@ const App: React.FC = () => {
   // State to manage current view
   const [currentView, setCurrentView] = useState<string>(getViewFromPath());
   const [selectedService, setSelectedService] = useState<string>('General Inquiry');
+
+  const getMeta = (view: string) => {
+    switch (view) {
+      case 'home': return {
+        title: "Hephae.co | GenAI Solutions",
+        desc: "Big AI for Small Business. Transform your business with our GenAI consulting and tools."
+      };
+      case 'schedule': return {
+        title: "Schedule Consultation | Hephae",
+        desc: "Book a call with Hephae's AI experts to start your transformation."
+      };
+      case 'about': return {
+        title: "About Us | Hephae",
+        desc: "Learn about Hephae's mission to bring enterprise-grade AI to small businesses."
+      };
+      case 'build-ai-profile': return {
+        title: "Build AI Profile | Hephae",
+        desc: "Create your custom AI readiness profile and get a tailored strategy."
+      };
+      case 'toolkit-hephae': return {
+        title: "Hephae Apps | Toolkit",
+        desc: "Explore Hephae's suite of AI tools designed for business efficiency."
+      };
+      case 'toolkit-curated': return {
+        title: "Curated Apps | Toolkit",
+        desc: "Discover hand-picked AI applications to boost your productivity."
+      };
+      case 'blog': return {
+        title: "Blog | Hephae",
+        desc: "Insights and updates on Generative AI and business transformation."
+      };
+      default: return {
+        title: "Hephae.co | GenAI Solutions",
+        desc: "Big AI for Small Business. We help you transform your business with GenAI."
+      };
+    }
+  };
+
+  const meta = getMeta(currentView);
+  usePageMeta(meta.title, meta.desc);
+
 
   const [isBottomGetStartedOpen, setIsBottomGetStartedOpen] = useState(false);
   const bottomDropdownRef = useRef<HTMLDivElement>(null);
