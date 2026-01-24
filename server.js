@@ -16,13 +16,22 @@ const fs = require('fs');
 
 app.use(express.json());
 
-// Setup CORS options with wildcard support for hephae.co subdomains
+// Setup CORS options to dynamically allow only the same host running the static JS
 const corsOptions = {
-  origin: [
-    /^https?:\/\/([a-z0-9-]+\.)*hephae\.co$/,
-    'http://localhost:3000',
-    'http://localhost:5173'
-  ]
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      `http://localhost:${port}`,
+      'https://hephae.co'
+    ];
+    const hephaeCoRegex = /^https?:\/\/([a-z0-9-]+\.)*hephae\.co$/;
+
+    // Allow requests with no origin (same-origin requests) or from allowed origins or matching hephae.co subdomains
+    if (!origin || allowedOrigins.includes(origin) || hephaeCoRegex.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 };
 
 // Middleware for basic validation of /api/submit-profile
