@@ -15,7 +15,15 @@ const db = admin.firestore();
 const fs = require('fs');
 
 app.use(express.json());
-app.use(cors()); // Enable CORS for all routes
+
+// Setup CORS options with wildcard support for hephae.co subdomains
+const corsOptions = {
+  origin: [
+    /^https?:\/\/([a-z0-9-]+\.)*hephae\.co$/,
+    'http://localhost:3000',
+    'http://localhost:5173'
+  ]
+};
 
 // Middleware for basic validation of /api/submit-profile
 const validateProfileData = (req, res, next) => {
@@ -39,8 +47,8 @@ const validateProfileData = (req, res, next) => {
   next();
 };
 
-// API Endpoint to save profile data
-app.post('/api/submit-profile', validateProfileData, async (req, res) => {
+// API Endpoint to save profile data, now with CORS protection
+app.post('/api/submit-profile', cors(corsOptions), validateProfileData, async (req, res) => {
   try {
     const data = req.body;
 
