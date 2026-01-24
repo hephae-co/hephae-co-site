@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors'); // Import cors
 const app = express();
 const port = process.env.PROXY_PORT || 3000;
 const admin = require('firebase-admin');
@@ -14,9 +15,32 @@ const db = admin.firestore();
 const fs = require('fs');
 
 app.use(express.json());
+app.use(cors()); // Enable CORS for all routes
+
+// Middleware for basic validation of /api/submit-profile
+const validateProfileData = (req, res, next) => {
+  const { businessName, problem, tools, socials } = req.body;
+
+  if (businessName === undefined) {
+    return res.status(400).json({ success: false, error: 'Business name is required.' });
+  }
+
+  if (problem === undefined) {
+    return res.status(400).json({ success: false, error: 'Problem description is required.' });
+  }
+
+  if (tools !== undefined && !Array.isArray(tools)) {
+    return res.status(400).json({ success: false, error: 'Tools must be an array if provided.' });
+  }
+
+  if (socials !== undefined && !Array.isArray(socials)) {
+    return res.status(400).json({ success: false, error: 'Socials must be an array if provided.' });
+  }
+  next();
+};
 
 // API Endpoint to save profile data
-app.post('/api/submit-profile', async (req, res) => {
+app.post('/api/submit-profile', validateProfileData, async (req, res) => {
   try {
     const data = req.body;
 
