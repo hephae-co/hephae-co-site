@@ -35,8 +35,11 @@ RUN chown -R appuser:appgroup /app
 # Switch to the non-root user
 USER appuser
 
-# Stage 2: Serve the static files with Nginx
+# Stage 2: Serve the static files with Nginx and run the Node.js server
 FROM nginx:1.24-alpine
+
+# Install Node.js
+RUN apk add --update nodejs
 
 # Copy the custom Nginx configuration
 COPY config/nginx.conf /etc/nginx/nginx.conf
@@ -48,12 +51,19 @@ RUN mkdir -p /tmp/nginx && \
 # Copy the built assets from the build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Grant permissions to nginx user
-RUN chown -R nginx:nginx /usr/share/nginx/html
+# Copy the Node.js application from the build stage
+COPY --from=build /app /app
 
-# Set OS environment variables
+# Set the working directory for the Node.js application
+WORKDIR /app
+
+# Grant permissions to nginx user for the app directory
+RUN chown -R nginx:nginx /app
+
+# Copy the startup scripts and make them executable
+COPY bin/start.sh /usr/local/bin/start.sh
 COPY bin/env.sh /docker-entrypoint.d/env.sh
-RUN chmod +x /docker-entrypoint.d/env.sh
+RUN chmod +x /usr/local/bin/start.sh /docker-entrypoint.d/env.sh
 
 # Switch to the non-root user
 USER nginx
@@ -61,5 +71,5 @@ USER nginx
 # Expose port 8080 for the Nginx server
 EXPOSE 8080
 
-# Start Nginx when the container launches
-CMD ["nginx", "-g", "daemon off;"]
+# Start the Node.js server and Nginx when the container launches
+CMD ["/usr/local/bin/start.sh"]

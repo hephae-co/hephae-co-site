@@ -1,6 +1,34 @@
 # Hephae Website
 
-This is the official website for Hephae.
+This is the official website for Hephae. It is a full-stack application with a React frontend and a Node.js backend using Express. The backend communicates with Firebase services and the application is designed for deployment on Google Cloud Run.
+
+## Architecture
+
+The application follows a client-server model where the backend serves the React application and provides an API that interacts with Firebase.
+
+```
+[Client Browser] <--> [Vite/Node.js on Cloud Run] <--> [Firebase Services]
+       |                      | (Express Server)
+       |                      |
+       <---------------------->
+        (Serves React App)
+```
+
+- **Frontend**: A React single-page application (SPA) that provides the user interface.
+- **Backend**: An Express.js server that serves the built React application's static files (`index.html`, CSS, JS) and may include API endpoints that use the `firebase-admin` SDK to communicate with Firebase services.
+- **Deployment**: The entire application is containerized and deployed as a single service on Google Cloud Run.
+
+## Project Structure
+
+```
+/
+├── components/     # React UI components
+├── public/         # Public assets
+├── App.tsx         # Main React application component
+├── server.js       # Node.js Express backend server
+├── Dockerfile      # Docker configuration for building the production container
+└── vite.config.ts  # Vite configuration
+```
 
 ## Getting Started
 
@@ -19,7 +47,7 @@ AI_PRODUCT_MOCKUP_URL="your_ai_product_mockup_url"
 MARKETING_BUSINESS_AI_URL="your_marketing_business_ai_url"
 ```
 
-Replace `"your_*_url"` and `"your_gemini_api_key"` with the actual values.
+Replace `"your_*_url"` and `"your_gemini_api_key"` with the actual values. For Firebase, you will also need to set up authentication. See the "Firebase Authentication" section below.
 
 ### Installation
 
@@ -34,6 +62,19 @@ To run the app in development mode:
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will automatically reload if you make changes to the code.
+
+### Firebase Authentication
+
+For the backend server to access Firebase services locally, you need to provide Application Default Credentials (ADC).
+
+1.  **Authenticate with Google Cloud**:
+    ```bash
+    gcloud auth application-default login
+    ```
+2.  **Set Google Application Credentials**: If you are using a service account file (recommended for production environments), set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of your service account key file.
+    ```bash
+    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account-file.json"
+    ```
 
 ## Usage
 
@@ -88,12 +129,11 @@ You can deploy this application directly to Cloud Run from your source code. The
 
 1.  A Google Cloud Project with billing enabled.
 2.  The [Google Cloud SDK](https://cloud.google.com/sdk/install) installed and authenticated.
-
-4.  The Cloud Run and Cloud Build APIs enabled in your project:
+3.  The Cloud Run and Cloud Build APIs enabled in your project:
     ```bash
     gcloud services enable run.googleapis.com cloudbuild.googleapis.com
     ```
-5.  Verify you own the domain you want to map (optional):
+4.  Verify you own the domain you want to map (optional):
     ```bash
     gcloud domains verify hephae.co
     ```
@@ -122,7 +162,7 @@ export DOMAIN="hephae.co"
 
 Then, create the domain mapping:
 ```bash
-gcloud beta run domain-mappings create --service ${SERVICE_NAME} --domain $DOMAIN --region us-central1 --env-vars-file .env
+gcloud beta run domain-mappings create --service ${SERVICE_NAME} --domain $DOMAIN --region us-central1
 ```
 
 ## Versioning
