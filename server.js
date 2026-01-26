@@ -20,7 +20,8 @@ app.use(express.json());
 const corsOptions = {
   origin: (origin, callback) => {
     const allowedOrigins = [
-      `http://localhost:${port}`,
+      `http://localhost:3000`,
+      `http://localhost:8080`,
       'https://hephae.co'
     ];
     const hephaeCoRegex = /^https?:\/\/([a-z0-9-]+\.)*hephae\.co$/;
