@@ -31,6 +31,17 @@ export const ShowcasePage: React.FC<ShowcasePageProps> = ({ category }) => {
             link: process.env.AI_READINESS_QUEST_URL!
         },
         {
+            title: "Hephae SEO Audit",
+            description: "Deep-dive analysis of your website's SEO performance with actionable AI-driven insights to boost your ranking.",
+            customVisual: (
+                <div className="w-full h-full flex items-center justify-center bg-slate-900">
+                    <div className="text-7xl mb-2 animate-pulse drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">🔍</div>
+                </div>
+            ),
+            tags: ["SEO", "Audit", "Analytics"],
+            link: "https://seo-audit.hephae.co/"
+        },
+        {
             title: "Local Foot Traffic Forecaster",
             description: "Analyze and forecast local foot traffic trends to optimize your business operations and marketing.",
             image: "https://storage.googleapis.com/everything-hephae/foot-traffic-logo.svg",

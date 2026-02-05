@@ -14,6 +14,7 @@ import { ArrowRight, Utensils, ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
 
 import { BuildAIProfile } from './components/BuildAIProfile';
+import { AnnouncementPopup } from './components/AnnouncementPopup';
 import { usePageMeta } from './usePageMeta';
 
 const App: React.FC = () => {
@@ -250,6 +251,9 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Global Notifications */}
+      {currentView === 'home' && <AnnouncementPopup />}
+
       <Navbar
         onScheduleClick={() => handleScheduleClick('General Inquiry')}
         onAboutClick={handleAboutClick}
