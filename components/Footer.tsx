@@ -39,6 +39,18 @@ export const Footer = () => {
                 <span className="material-icons text-lg">contact_mail</span>
                 <span>Contact</span>
               </a>
+
+              <span className="text-muted-foreground">|</span>
+
+              <a
+                href="https://www.instagram.com/hephae_co"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span className="material-icons text-lg">camera_alt</span>
+                <span>Instagram</span>
+              </a>
             </nav>
 
             <span className="text-muted-foreground hidden sm:inline">|</span>
@@ -56,7 +68,7 @@ export const Footer = () => {
 
           {/* Copyright */}
           <div className="text-center text-sm text-gray-400">
-            © 2025 hephae.co. All rights reserved.
+            © 2026 hephae.co. All rights reserved.
           </div>
         </div>
       </div>
